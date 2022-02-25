@@ -22,11 +22,11 @@ public class UserController {
     VoteRepository voteRepository;
 
     @GetMapping("/api/users")
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         List<User> userList = repository.findAll();
         for (User u : userList) {
             List<Post> postList = u.getPosts();
-            for (Post p: postList) {
+            for (Post p : postList) {
                 p.setVoteCount(voteRepository.countVotesByPostId(p.getId()));
             }
         }
@@ -34,27 +34,29 @@ public class UserController {
     }
 
     @GetMapping("/api/users/{id}")
-    public User getUserById(@PathVariable Integer id){
+    public User getUserById(@PathVariable Integer id) {
         User returnUser = repository.getById(id);
         List<Post> postList = returnUser.getPosts();
-        for (Post p: postList) {
+        for (Post p : postList) {
             p.setVoteCount(voteRepository.countVotesByPostId(p.getId()));
         }
+
         return returnUser;
     }
 
     @PostMapping("/api/users")
-    public User addUser(@RequestBody User user){
-        //Encrypt password
+    public User addUser(@RequestBody User user) {
+        // Encrypt password
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         repository.save(user);
         return user;
     }
 
     @PutMapping("/api/users/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user){
+    public User updateUser(@PathVariable int id, @RequestBody User user) {
         User tempUser = repository.getById(id);
-        if(!tempUser.equals(null)){
+
+        if (!tempUser.equals(null)) {
             user.setId(tempUser.getId());
             repository.save(user);
         }
@@ -63,8 +65,7 @@ public class UserController {
 
     @DeleteMapping("/api/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable int id){
+    public void deleteUser(@PathVariable int id) {
         repository.deleteById(id);
     }
-
 }
